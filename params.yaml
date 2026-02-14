@@ -1,0 +1,23 @@
+project:
+  name: aethr
+  seed: 42
+
+paths:
+  dataset_yaml: data/raw/solar-panel-defects/data.yaml
+  processed_yaml: data/processed/data.yaml
+  best_model: models/best.pt
+  onnx_model: models/best.onnx
+  runs_dir: runs
+
+train:
+  model: yolo11s.pt
+  epochs: 80
+  imgsz: 640
+  batch: 16
+  patience: 20
+  run_name: aethr
+
+inference:
+  conf_threshold: 0.25
+  uncertainty_threshold: 0.45
+  max_det: 300

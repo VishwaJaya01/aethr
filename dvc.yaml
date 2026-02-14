@@ -1,0 +1,28 @@
+stages:
+  preprocess:
+    cmd: python -m src.data_preprocess --raw-dir data/raw --processed-dir data/processed
+    deps:
+      - src/data_preprocess.py
+      - params.yaml
+    outs:
+      - data/processed/data.yaml
+
+  train:
+    cmd: >
+      yolo task=detect mode=train model=yolo11s.pt
+      data=data/processed/data.yaml
+      epochs=80 imgsz=640 batch=16 patience=20
+      project=runs name=aethr &&
+      cp runs/aethr/weights/best.pt models/best.pt
+    deps:
+      - data/processed/data.yaml
+      - params.yaml
+    outs:
+      - models/best.pt
+
+  export_onnx:
+    cmd: yolo task=detect mode=export model=models/best.pt format=onnx imgsz=640 simplify=True
+    deps:
+      - models/best.pt
+    outs:
+      - models/best.onnx
