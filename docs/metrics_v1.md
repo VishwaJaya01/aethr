@@ -1,5 +1,6 @@
 # Aethr Metrics v1
 
+- Release: `v1.0.0`
 - Date: 2026-02-14
 - Model: YOLO11s (`yolo11s.pt` baseline)
 - Training Environment: Google Colab Web (T4 GPU)
@@ -11,40 +12,40 @@
 
 - Primary baseline metric: **mAP50-95 = 0.314**
 - Source: user-reported result after baseline training (~70 epochs)
-- Status: baseline complete, ready for class-wise error analysis and active learning loop
+- Status: baseline v1 complete, ready for class-wise error analysis and active learning loop
 
 ## Validation Metrics
 
 - mAP50-95: `0.314`
-- mAP50: `TBD`
-- Precision: `TBD`
-- Recall: `TBD`
+- mAP50: `Not recorded in v1 notes`
+- Precision: `Not recorded in v1 notes`
+- Recall: `Not recorded in v1 notes`
 
 ## Test Metrics
 
-- mAP50-95: `TBD`
-- mAP50: `TBD`
-- Precision: `TBD`
-- Recall: `TBD`
+- mAP50-95: `Not recorded in v1 notes`
+- mAP50: `Not recorded in v1 notes`
+- Precision: `Not recorded in v1 notes`
+- Recall: `Not recorded in v1 notes`
 
 ## Per-Class Metrics (Validation)
 
 | Class Name | Precision | Recall | mAP50 | mAP50-95 | Notes |
 |---|---:|---:|---:|---:|---|
-| class_1 | TBD | TBD | TBD | TBD | |
-| class_2 | TBD | TBD | TBD | TBD | |
-| class_3 | TBD | TBD | TBD | TBD | |
-| class_4 | TBD | TBD | TBD | TBD | |
-| class_5 | TBD | TBD | TBD | TBD | |
-| class_6 | TBD | TBD | TBD | TBD | |
-| class_7 | TBD | TBD | TBD | TBD | |
+| class_1 | Not recorded | Not recorded | Not recorded | Not recorded | Replace with real class name |
+| class_2 | Not recorded | Not recorded | Not recorded | Not recorded | Replace with real class name |
+| class_3 | Not recorded | Not recorded | Not recorded | Not recorded | Replace with real class name |
+| class_4 | Not recorded | Not recorded | Not recorded | Not recorded | Replace with real class name |
+| class_5 | Not recorded | Not recorded | Not recorded | Not recorded | Replace with real class name |
+| class_6 | Not recorded | Not recorded | Not recorded | Not recorded | Replace with real class name |
+| class_7 | Not recorded | Not recorded | Not recorded | Not recorded | Replace with real class name |
 
 ## Training Configuration Snapshot
 
 - Epochs run: `~70` (user-reported)
 - Image size: `640`
 - Batch size: `16`
-- Early stop/patience: `TBD`
+- Early stop/patience: `Not recorded in v1 notes`
 - Confidence threshold at inference: `0.25` (project default)
 
 ## Artifact Paths
@@ -53,9 +54,9 @@
 - Best ONNX model: `models/best.onnx`
 - Colab/Drive runs directory: `.../aethr/runs/`
 
-## How To Fill Remaining Metrics From Notebook 02
+## Optional Backfill (If You Want Full Metric Table)
 
-Run this in `notebooks/02_evaluate.ipynb` after `model.val(...)`:
+Run this in `notebooks/02_evaluate.ipynb` after `model.val(...)` to backfill missing fields:
 
 ```python
 print('VAL metrics:', val_metrics.results_dict)
@@ -68,7 +69,7 @@ Then copy values into this file.
 
 ## Next Actions
 
-1. Fill missing validation/test metrics from notebook 02 outputs.
-2. Replace `class_1..class_7` with exact class names from `data.yaml`.
+1. Replace `class_1..class_7` with exact class names from `data.yaml`.
+2. Optionally fill remaining validation/test metrics from notebook 02 outputs.
 3. Run targeted error analysis for lowest-performing classes.
 4. Start active learning cycle after collecting feedback samples in `data/feedback/`.

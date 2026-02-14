@@ -1,15 +1,25 @@
 # Aethr
 
-Aethr is an adaptive aerial defect inspector for solar infrastructure.
-It detects common PV defects from drone imagery using YOLO11 and supports
-active learning with human feedback.
+Adaptive Aerial Defect Inspector for solar infrastructure using drone/aerial imagery.
 
-## Scope
+**Release:** `v1.0.0`  
+**Status:** Baseline complete and runnable end-to-end.
 
-- Defects: cracks, dust/soiling, bird droppings, physical damage, hotspots.
-- Model family: Ultralytics YOLO11 (`yolo11n.pt` / `yolo11s.pt`).
-- Training: Google Colab free T4 GPU (preferred).
-- Local: FastAPI API + Streamlit dashboard + DVC/W&B tracking.
+## What v1 Includes
+
+- YOLO11 detection pipeline for solar panel defects.
+- Google Colab Web + T4 training workflow.
+- Evaluation notebook for validation/test checks.
+- FastAPI inference service.
+- Streamlit dashboard with uncertainty-aware feedback capture.
+- ONNX export for portable inference.
+
+## Baseline Result (v1)
+
+- Model: `YOLO11s`
+- Dataset: Roboflow object detection dataset (7 classes)
+- Reported baseline metric: `mAP50-95 = 0.314`
+- Metrics document: `docs/metrics_v1.md`
 
 ## Project Structure
 
@@ -17,6 +27,8 @@ active learning with human feedback.
 aethr/
 ├── AGENT.md
 ├── README.md
+├── CHANGELOG.md
+├── VERSION
 ├── requirements.txt
 ├── Dockerfile
 ├── docker-compose.yml
@@ -33,57 +45,110 @@ aethr/
 ├── src/
 │   ├── config.py
 │   ├── data_preprocess.py
-│   └── inference/
-│       └── predictor.py
-├── app/
-│   └── streamlit_app.py
-├── api/
-│   └── main.py
+│   └── inference/predictor.py
+├── api/main.py
+├── app/streamlit_app.py
 ├── models/
-├── runs/
 └── docs/
-    └── architecture.drawio.png
+    ├── architecture.drawio.png
+    └── metrics_v1.md
 ```
 
 ## Setup (Local)
 
-```bash
-conda create -n aethr python=3.10 -y
-conda activate aethr
+### Windows (PowerShell)
+
+```powershell
+cd D:\Projects\aethr
+py -3.10 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## Training (Google Colab Extension Workflow)
+### Linux/macOS
 
-1. Open this repo in VS Code.
-2. Open `notebooks/01_train_yolo11.ipynb`.
-3. Use the VS Code Google Colab extension to run notebook cells in Colab.
-4. Set runtime to **GPU (T4)**.
-5. Run cells top-to-bottom.
+```bash
+cd aethr
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
 
-Notes:
-- Keep dataset under `data/raw/.../data.yaml`.
-- Save trained `best.pt` to `models/best.pt`.
-- Export ONNX to `models/best.onnx`.
+## Training (Google Colab Web + Google Drive)
 
-## Run Locally
+1. Open `notebooks/01_train_yolo11.ipynb` in Google Colab Web.
+2. Set runtime to `GPU (T4)`.
+3. Mount Drive in notebook.
+4. Point dataset path to Drive YOLO export with `data.yaml`.
+5. Run training cells top-to-bottom.
+6. Save artifacts to Drive and copy to local `models/` as needed.
 
-API:
+Required dataset layout:
+
+```text
+.../data/raw/<dataset-name>/
+  data.yaml
+  train/images
+  train/labels
+  valid/images
+  valid/labels
+  test/images  (optional)
+  test/labels  (optional)
+```
+
+## Evaluation
+
+Run `notebooks/02_evaluate.ipynb` after training.
+
+- Uses `models/best.pt` and dataset `data.yaml`.
+- Reports validation metrics and test metrics (if test split exists).
+
+## Local Inference
+
+### API
 
 ```bash
 uvicorn api.main:app --reload --port 8000
 ```
 
-Dashboard:
+Health check:
+
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+### Streamlit
 
 ```bash
 streamlit run app/streamlit_app.py
 ```
 
-## Active Learning Loop
+## Feedback Collection (Human-in-the-Loop)
 
-1. Upload image in Streamlit.
-2. Review predictions and uncertain detections.
-3. Save feedback package to `data/feedback/`.
-4. Re-annotate feedback set and fine-tune with
-   `notebooks/03_active_learning.ipynb` on Colab.
+In Streamlit:
+
+1. Upload image.
+2. Run inference.
+3. Enable `Mark this sample for feedback review`.
+4. Add review notes.
+5. Click `Save Feedback Package`.
+
+Saved output:
+
+- Feedback image copy under `data/feedback/`
+- JSON metadata package under `data/feedback/`
+
+Note: feedback JSON is metadata only. Fine-tuning requires re-annotation and a new YOLO dataset export.
+
+## Data and Artifact Policy
+
+- Do not commit raw dataset files in `data/`.
+- Keep only placeholders (`.gitkeep`) and optional DVC pointers.
+- `runs/` is local experiment output and should remain untracked.
+
+## Versioning
+
+- Current release version is stored in `VERSION`.
+- Release changes are tracked in `CHANGELOG.md`.
