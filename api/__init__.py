@@ -1,0 +1,1 @@
+"""Aethr FastAPI package."""
